@@ -1,0 +1,9 @@
+/.idea
+/build
+
+.DS_Store
+/csvbeat
+/csvbeat.test
+*.pyc
+*.state
+csvbeat-local.yml
