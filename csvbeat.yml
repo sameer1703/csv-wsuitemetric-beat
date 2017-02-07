@@ -38,7 +38,7 @@ csvbeat:
 #-------------------------- Elasticsearch output ------------------------------
 output.elasticsearch:
   # Array of hosts to connect to.
-  hosts: ["localhost:9200"]
+  hosts: ${ES_HOSTS}
 
   # Optional protocol and basic auth credentials.
   #protocol: "https"
