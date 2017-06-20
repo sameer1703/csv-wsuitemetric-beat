@@ -12,17 +12,18 @@ import (
 	"github.com/jsalcedo09/csvbeat/beatcsv"
 	"github.com/jsalcedo09/csvbeat/config"
 
+	"bytes"
+	"encoding/csv"
+	"io"
+	"path/filepath"
+	"strconv"
+	"text/template"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
-	"io"
-	"path/filepath"
-	"encoding/csv"
 	"github.com/gosimple/slug"
-	"text/template"
-	"bytes"
-	"strconv"
 )
 
 type Csvbeat struct {
@@ -41,7 +42,7 @@ func New(b *beat.Beat, cfg *common.Config) (beat.Beater, error) {
 	}
 
 	bt := &Csvbeat{
-		done: make(chan struct{}),
+		done:   make(chan struct{}),
 		config: config,
 	}
 	sfConf := map[string]string{
@@ -86,11 +87,11 @@ func (bt *Csvbeat) Run(b *beat.Beat) error {
 
 func (bt *Csvbeat) DownloadAndPublish() {
 	objects, err := bt.getFilesList()
-	if err != nil{
+	if err != nil {
 		logp.Err("Error fetching files list: %v", err)
 	}
-	for _, object := range objects{
-		if !bt.state.HasFile(*object.Key){
+	for _, object := range objects {
+		if !bt.state.HasFile(*object.Key) {
 			if filepath.Ext(*object.Key) == ".csv" {
 				err = bt.processObject(object)
 				if err != nil {
@@ -103,19 +104,19 @@ func (bt *Csvbeat) DownloadAndPublish() {
 				} else {
 					logp.Info("Updated state file")
 				}
-			}else{
+			} else {
 				logp.Warn("Skipping file %s, only csv files supported", *object.Key)
 			}
-		}else{
+		} else {
 			logp.Info("File %s already processed", *object.Key)
 		}
 	}
 
 }
 
-func (bt *Csvbeat) processObject(object *s3.Object) error{
+func (bt *Csvbeat) processObject(object *s3.Object) error {
 	reader, err := bt.downloadObject(object)
-	if err != nil{
+	if err != nil {
 		logp.Err("Error downloading object: %v", err)
 	}
 	var headers []string
@@ -127,14 +128,14 @@ func (bt *Csvbeat) processObject(object *s3.Object) error{
 		if err != nil {
 			return err
 		}
-		if headers == nil{
-			for _, val := range record{
+		if headers == nil {
+			for _, val := range record {
 				headers = append(headers, slug.Make(val))
 			}
-			logp.Info("%s",headers)
-		}else{
+			logp.Info("%s", headers)
+		} else {
 			err := bt.processAndPublishRow(headers, record)
-			if err != nil{
+			if err != nil {
 				logp.Err("Error processing row: %v", err)
 			}
 		}
@@ -142,15 +143,17 @@ func (bt *Csvbeat) processObject(object *s3.Object) error{
 	}
 	return nil
 }
-func (bt *Csvbeat) processAndPublishRow(headers []string, record []string) error{
+func (bt *Csvbeat) processAndPublishRow(headers []string, record []string) error {
 	event := common.MapStr{}
-	for i, header := range headers{
-		if header == bt.config.EventTypeColumn{
+	for i, header := range headers {
+		if header == bt.config.EventTypeColumn {
 			event["type"] = record[i]
 		}
-		if val, err := strconv.ParseInt(record[i],10,64); err == nil {
-    			event[header] = val
-		}else{
+		if val, err := strconv.ParseInt(record[i], 10, 64); err == nil {
+			event[header] = val
+		} else if val, err := strconv.ParseFloat(record[i], 64); err == nil {
+			event[header] = val
+		} else {
 			event[header] = record[i]
 		}
 	}
@@ -160,12 +163,12 @@ func (bt *Csvbeat) processAndPublishRow(headers []string, record []string) error
 	}
 	buf := new(bytes.Buffer)
 	err = tmpl.Execute(buf, event)
-	if err != nil{
+	if err != nil {
 		return err
 	}
 
 	ts, err := time.Parse(bt.config.TimestampFormat, buf.String())
-	if err != nil{
+	if err != nil {
 		return err
 	}
 	event["@timestamp"] = common.Time(ts)
@@ -175,7 +178,7 @@ func (bt *Csvbeat) processAndPublishRow(headers []string, record []string) error
 	return nil
 }
 
-func (bt *Csvbeat) downloadObject(object *s3.Object) (*csv.Reader, error){
+func (bt *Csvbeat) downloadObject(object *s3.Object) (*csv.Reader, error) {
 	svc, err := bt.getAwsSession()
 	if err != nil {
 		return nil, err
@@ -186,7 +189,7 @@ func (bt *Csvbeat) downloadObject(object *s3.Object) (*csv.Reader, error){
 	}
 
 	resp, err := svc.GetObject(params)
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 
@@ -212,7 +215,7 @@ func (bt *Csvbeat) getFilesList() ([]*s3.Object, error) {
 		return nil, err
 	}
 
-	for _, object := range resp.Contents{
+	for _, object := range resp.Contents {
 		logp.Info("Object: %s", *object.Key)
 	}
 	return resp.Contents, nil
@@ -236,9 +239,6 @@ func (bt *Csvbeat) getAwsSession() (*s3.S3, error) {
 
 	return svc, nil
 }
-
-
-
 
 func (bt *Csvbeat) Stop() {
 	if err := bt.state.Save(); err != nil {
