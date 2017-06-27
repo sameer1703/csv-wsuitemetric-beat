@@ -7,26 +7,6 @@
       "_meta": {
         "version": "1.0"
       },
-      "dynamic_templates": [
-        {
-          "tokenize_long_text": {
-            "mapping": {
-              "type": "string",
-              "store": true,
-              "fielddata":true,
-              "analyzer": "standard_token_analyzer",
-              "index" : "analyzed",
-              "fields": {
-                "raw": {
-                  "type":  "keyword",
-                  "ignore_above": 10
-                }
-              }
-            },
-            "match_mapping_type": "string"
-          }
-        }
-      ],
       "properties": {
         "@timestamp": {
           "type": "date"
@@ -114,5 +94,5 @@
       }
     }
   },
-  "template": "*csvbeat*"
+  "template": "csvbeat-qtrack-emails"
 }

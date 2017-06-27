@@ -5,6 +5,7 @@
 csvbeat:
   # Defines how often an event is sent to the output
   period: 1m
+  state_file_name: ${STATE_FILE_NAME:"csvbeat"}
   state_file_path: ${STATE_FILE_PATH:""}
   state_file_storage_type: ${STATE_FILE_STORAGE_TYPE}
   aws_access_key: ${AWS_ACCESS_KEY}
