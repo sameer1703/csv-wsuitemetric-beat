@@ -201,16 +201,23 @@ func (bt *Csvbeat) downloadObject(object *s3.Object) (*csv.Reader, error) {
 }
 
 func (bt *Csvbeat) getFilesList() ([]*s3.Object, error) {
+
 	svc, err := bt.getAwsSession()
 	if err != nil {
 		return nil, err
 	}
-	params := &s3.ListObjectsInput{
-		Bucket: aws.String(bt.config.AwsS3BucketName),
-		Prefix: aws.String(bt.config.FilesPrefix),
+	params := &s3.ListObjectsV2Input{
+		Bucket:  aws.String(bt.config.AwsS3BucketName),
+		Prefix:  aws.String(bt.config.FilesPrefix),
+		MaxKeys: aws.Int64(bt.config.BatchSize),
 	}
 
-	resp, err := svc.ListObjects(params)
+	processedFiles := bt.state.GetFiles()
+	if len(processedFiles) != 0 {
+		params.StartAfter = aws.String(processedFiles[len(processedFiles)-1])
+	}
+
+	resp, err := svc.ListObjectsV2(params)
 	if err != nil {
 		return nil, err
 	}

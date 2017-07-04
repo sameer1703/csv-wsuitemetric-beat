@@ -98,5 +98,5 @@
       }
     }
   },
-  "template": "bancolombia-csvbeat-qtrack-emails"
+  "template": "bancolombia-qtrack-emails"
 }
