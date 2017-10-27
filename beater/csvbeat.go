@@ -1,6 +1,7 @@
 package beater
 
 import (
+	"crypto/sha1"
 	"fmt"
 	"time"
 
@@ -172,6 +173,10 @@ func (bt *Csvbeat) processAndPublishRow(headers []string, record []string) error
 		return err
 	}
 	event["@timestamp"] = common.Time(ts)
+	uniquekey := fmt.Sprintf("%s_%s_%s", event["eventdate"], event["category"], event["type"])
+	h := sha1.New()
+	io.WriteString(h, uniquekey)
+	event["key"] = fmt.Sprintf("%x", h.Sum(nil))
 	bt.client.PublishEvent(event)
 	logp.Info("Event sent")
 
