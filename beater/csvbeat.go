@@ -177,6 +177,7 @@ func (bt *Csvbeat) processAndPublishRow(headers []string, record []string) error
 	h := sha1.New()
 	io.WriteString(h, uniquekey)
 	event["key"] = fmt.Sprintf("%x", h.Sum(nil))
+	event["indexname"] = "bancolombia-qtrack-emails-contact"
 	bt.client.PublishEvent(event)
 	logp.Info("Event sent")
 
