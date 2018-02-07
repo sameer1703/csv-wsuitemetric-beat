@@ -104,6 +104,7 @@ func (bt *Csvbeat) DownloadAndPublish() {
 				} else {
 					logp.Info("Updated state file")
 				}
+				bt.deleteObject(object)
 			} else {
 				logp.Warn("Skipping file %s, only csv files supported", *object.Key)
 			}
@@ -111,7 +112,7 @@ func (bt *Csvbeat) DownloadAndPublish() {
 			logp.Info("File %s already processed", *object.Key)
 		}
 	}
-
+	bt.Stop()
 }
 
 func (bt *Csvbeat) processObject(object *s3.Object) error {
@@ -172,7 +173,7 @@ func (bt *Csvbeat) processAndPublishRow(headers []string, record []string) error
 		return err
 	}
 	event["@timestamp"] = common.Time(ts)
-	bt.client.PublishEvent(event)
+	bt.client.PublishEvent(event, publisher.Sync)
 	logp.Info("Event sent")
 
 	return nil
@@ -197,6 +198,26 @@ func (bt *Csvbeat) downloadObject(object *s3.Object) (*csv.Reader, error) {
 
 	reader := csv.NewReader(resp.Body)
 	return reader, nil
+
+}
+
+func (bt *Csvbeat) deleteObject(object *s3.Object) (*csv.Reader, error) {
+	svc, err := bt.getAwsSession()
+	if err != nil {
+		return nil, err
+	}
+	params := &s3.DeleteObjectInput{
+		Bucket: aws.String(bt.config.AwsS3BucketName),
+		Key:    aws.String(*object.Key),
+	}
+
+	_, err = svc.DeleteObject(params)
+	if err != nil {
+		return nil, err
+	}
+
+	//defer resp.Body.Close()
+	return nil, nil
 
 }
 

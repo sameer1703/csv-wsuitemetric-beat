@@ -114,5 +114,5 @@
       }
     }
   },
-  "template": "*csvbeat*"
+  "template": "*whosting*"
 }
