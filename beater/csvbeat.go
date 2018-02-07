@@ -9,8 +9,8 @@ import (
 	"github.com/elastic/beats/libbeat/logp"
 	"github.com/elastic/beats/libbeat/publisher"
 
-	"github.com/jsalcedo09/csvbeat/beatcsv"
-	"github.com/jsalcedo09/csvbeat/config"
+	"github.com/sameer1703/csv-wsuitemetric-beat/beatcsv"
+	"github.com/sameer1703/csv-wsuitemetric-beat/config"
 
 	"bytes"
 	"encoding/csv"

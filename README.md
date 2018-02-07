@@ -3,7 +3,7 @@
 Welcome to Csvbeat.
 
 Ensure that this folder is at the following location:
-`${GOPATH}/github.com/jsalcedo09`
+`${GOPATH}/github.com/sameer1703`
 
 ## Getting Started with Csvbeat
 
@@ -24,7 +24,7 @@ It will create a clean git history for each major step. Note that you can always
 To push Csvbeat in the git repository, run the following commands:
 
 ```
-git remote set-url origin https://github.com/jsalcedo09/csvbeat
+git remote set-url origin https://github.com/sameer1703/csv-wsuitemetric-beat
 git push origin master
 ```
 
@@ -99,9 +99,9 @@ make clean
 To clone Csvbeat from the git repository, run the following commands:
 
 ```
-mkdir -p ${GOPATH}/github.com/jsalcedo09
-cd ${GOPATH}/github.com/jsalcedo09
-git clone https://github.com/jsalcedo09/csvbeat
+mkdir -p ${GOPATH}/github.com/sameer1703
+cd ${GOPATH}/github.com/sameer1703
+git clone https://github.com/sameer1703/csv-wsuitemetric-beat
 ```
 
 

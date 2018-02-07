@@ -1,5 +1,5 @@
 BEATNAME=csvbeat
-BEAT_DIR=github.com/jsalcedo09/csvbeat
+BEAT_DIR=github.com/sameer1703/csv-wsuitemetric-beat
 SYSTEM_TESTS=false
 TEST_ENVIRONMENT=false
 ES_BEATS?=./vendor/github.com/elastic/beats

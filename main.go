@@ -5,7 +5,7 @@ import (
 
 	"github.com/elastic/beats/libbeat/beat"
 
-	"github.com/jsalcedo09/csvbeat/beater"
+	"github.com/sameer1703/csv-wsuitemetric-beat/beater"
 )
 
 func main() {

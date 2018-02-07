@@ -28,10 +28,10 @@ addons:
 
 before_install:
   # Redo the travis setup but with the elastic/libbeat path. This is needed so the package path is correct
-  - mkdir -p $HOME/gopath/src/github.com/jsalcedo09/csvbeat/
-  - rsync -az ${TRAVIS_BUILD_DIR}/ $HOME/gopath/src/github.com/jsalcedo09/csvbeat/
-  - export TRAVIS_BUILD_DIR=$HOME/gopath/src/github.com/jsalcedo09/csvbeat/
-  - cd $HOME/gopath/src/github.com/jsalcedo09/csvbeat/
+  - mkdir -p $HOME/gopath/src/github.com/sameer1703/csv-wsuitemetric-beat/
+  - rsync -az ${TRAVIS_BUILD_DIR}/ $HOME/gopath/src/github.com/sameer1703/csv-wsuitemetric-beat/
+  - export TRAVIS_BUILD_DIR=$HOME/gopath/src/github.com/sameer1703/csv-wsuitemetric-beat/
+  - cd $HOME/gopath/src/github.com/sameer1703/csv-wsuitemetric-beat/
 
 install:
   - true
